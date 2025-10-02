@@ -1,0 +1,48 @@
+services:
+  # Your web application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: boom_web
+    ports:
+      - "4321:4321"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+      - MONGODB_DB=boom
+      - HOST=0.0.0.0
+      - PORT=4321
+    depends_on:
+      - mongo
+    # For development: mount source code
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+
+  # MongoDB database
+  mongo:
+    image: mongo:7
+    container_name: boom_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=boom
+
+  # MongoDB web UI
+  mongo-express:
+    image: mongo-express:1
+    container_name: boom_mongo_express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:

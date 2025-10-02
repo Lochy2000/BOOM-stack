@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="BOOM Stack - Ready to Build">
+  <h1>🚀 BOOM Stack Template</h1>
+  <p>Your HTML-first app starts here. Clone this template and build fast.</p>
+
+  <h2>Example: Dynamic Content with HTMX</h2>
+  <p>Click the button to see HTMX in action - it fetches HTML from the server and swaps it in.</p>
+
+  <button
+    hx-get="/api/example"
+    hx-target="#result"
+    hx-swap="innerHTML"
+  >
+    Click me
+  </button>
+
+  <div id="result" style="margin-top: 1rem;"></div>
+
+  <hr />
+
+  <h2>What's Next?</h2>
+  <ul style="line-height: 2;">
+    <li>Edit <code>src/pages/index.astro</code> to customize this page</li>
+    <li>Add your API routes in <code>src/pages/api/</code></li>
+    <li>Create components in <code>src/components/</code></li>
+    <li>Use <code>db()</code> from <code>src/lib/db.ts</code> to query MongoDB</li>
+  </ul>
+
+  <h2>Quick Tips</h2>
+  <ul style="line-height: 2;">
+    <li><strong>HTMX</strong>: Add <code>hx-get</code>, <code>hx-post</code> to any element</li>
+    <li><strong>MongoDB</strong>: Already connected, just import <code>db</code></li>
+    <li><strong>Deploy</strong>: Run <code>docker build</code> or deploy to Vercel/Netlify</li>
+  </ul>
+
+  <hr />
+
+  <p><small>
+    Built with <a href="https://astro.build">Astro</a> +
+    <a href="https://bun.sh">Bun</a> +
+    <a href="https://htmx.org">HTMX</a> +
+    <a href="https://mongodb.com">MongoDB</a>
+  </small></p>
+</Base>
+
+<style>
+  ul {
+    padding-left: 1.5rem;
+  }
+
+  a {
+    color: #3b82f6;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
