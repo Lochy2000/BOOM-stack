@@ -1,3 +1,6 @@
+<img width="800" height="533" alt="image" src="https://github.com/user-attachments/assets/5a6b91aa-30d0-4be8-9f81-7aa69a5b982e" />
+
+
 # BOOM Stack - Starter Template
 
 > **B**un + **O**pen standards + **O**ptimized delivery + **M**inimal JavaScript
