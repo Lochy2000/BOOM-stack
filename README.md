@@ -23,16 +23,15 @@ docker-compose up --build
 That's it! No dependencies to install. Just Docker.
 
 ## What You Get
+A lightweight full-stack template for launching MVPs, internal tools, dashboards, and CRUD applications without the complexity of modern frontend frameworks.
+BOOM combines a server-first architecture with a simple development experience, providing a solid starting point for projects that need to be built and deployed quickly.
 
 - **Bun** - Fast JavaScript runtime and package manager
 - **Astro** - Server-first web framework
 - **HTMX** - Dynamic HTML without heavy JavaScript
 - **MongoDB** - Document database ready to use
 
-A lightweight full-stack template for launching MVPs, internal tools, dashboards, and CRUD applications without the complexity of modern frontend frameworks.
- 
-BOOM combines a server-first architecture with a simple development experience, providing a solid starting point for projects that need to be built and deployed quickly.
- 
+
 ---
  
 ## Why BOOM?
