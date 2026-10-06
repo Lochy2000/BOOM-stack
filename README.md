@@ -29,189 +29,405 @@ That's it! No dependencies to install. Just Docker.
 - **HTMX** - Dynamic HTML without heavy JavaScript
 - **MongoDB** - Document database ready to use
 
-## The BOOM Philosophy
-
-1. **Server-first** - Render HTML on the server
-2. **HTML-over-the-wire** - Send HTML partials, not JSON
-3. **Minimal JavaScript** - HTMX is ~14KB
-4. **Fast by default** - Bun runtime, minimal bundles
-
-## Project Structure
-
-```
-├── src/
-│   ├── pages/
-│   │   ├── index.astro          # Homepage
-│   │   └── api/
-│   │       └── example.ts       # Example API endpoint
-│   ├── layouts/
-│   │   └── Base.astro          # Base layout with HTMX
-│   ├── components/              # Your components
-│   └── lib/
-│       └── db.ts               # MongoDB connection
-├── docker-compose.yml          # Full stack setup
-├── Dockerfile                  # Production build
-└── astro.config.ts            # Astro configuration
-```
-
-## How It Works
-
-### The Pattern
-
-```
-1. User interacts with HTML
-2. HTMX sends request to server
-3. Server queries DB, renders HTML
-4. HTMX swaps HTML into page
-5. Done. No client framework needed.
-```
-
-### Example: Dynamic Content
-
-**Component** ([src/pages/index.astro](src/pages/index.astro)):
-```astro
-<button
-  hx-get="/api/example"
-  hx-target="#result"
-  hx-swap="innerHTML"
->
-  Click me
-</button>
-<div id="result"></div>
-```
-
-**API Endpoint** ([src/pages/api/example.ts](src/pages/api/example.ts)):
-```typescript
-export const GET: APIRoute = async () => {
-  const timestamp = new Date().toLocaleTimeString();
-
-  return new Response(
-    `<p>✅ Server time: ${timestamp}</p>`,
-    { headers: { "Content-Type": "text/html" } }
-  );
-};
-```
-
-**What happens:**
-- User clicks button
-- HTMX sends GET request
-- Server returns HTML partial
-- HTMX swaps it into `#result`
-- No JavaScript frameworks needed!
-
-## Database
-
-MongoDB connection is ready at [src/lib/db.ts](src/lib/db.ts):
-
-```typescript
-import { db } from "../lib/db";
-
-// Use it anywhere
-const items = await db().collection("items").find().toArray();
-```
-
-### Access MongoDB
-
-- **App**: `mongodb://mongo:27017` (from Docker containers)
-- **Web UI**: http://localhost:8081 (Mongo Express)
-  - Username: `admin`
-  - Password: `admin`
-
-## Commands
-
-```bash
-# Start everything
-docker-compose up
-
-# Start in background
-docker-compose up -d
-
-# Stop
-docker-compose down
-
-# Rebuild
-docker-compose up --build
-
-# View logs
-docker-compose logs -f web
-```
-
-## Customize
-
-### 1. Update Homepage
-Edit [src/pages/index.astro](src/pages/index.astro)
-
-### 2. Add API Routes
-Create files in `src/pages/api/`:
-
-```typescript
-// src/pages/api/your-endpoint.ts
-import type { APIRoute } from "astro";
-import { db } from "../../lib/db";
-
-export const GET: APIRoute = async () => {
-  const data = await db().collection("items").find().toArray();
-
-  return new Response(`<ul>${data.map(i => `<li>${i.name}</li>`).join("")}</ul>`, {
-    headers: { "Content-Type": "text/html" }
-  });
-};
-```
-
-### 3. Add Components
-Create `.astro` files in `src/components/`
-
-### 4. Use HTMX
-Add attributes to any HTML element:
-
-```astro
-<div hx-get="/api/data" hx-trigger="load" hx-swap="innerHTML">
-  Loading...
-</div>
-```
-
-## Deploy
-
-The Dockerfile builds a production-ready image with Bun:
-
-```bash
-# Build
-docker build -t my-app .
-
-# Run
-docker run -p 4321:4321 -e MONGODB_URI=<your-uri> my-app
-```
-
-Deploy to:
-- **Fly.io/Railway** - Deploy the Docker image
-- **Any VPS** - Docker or Bun + MongoDB
-- **Kubernetes** - Use the provided Dockerfile
-
-## When to Use BOOM
-
-✅ **Good for:**
-- CRUD applications
-- Dashboards and admin panels
-- Internal tools
-- Content sites with interactivity
-- MVPs and prototypes
-
-❌ **Not ideal for:**
-- Highly interactive apps (complex client state)
-- Offline-first applications
-- Real-time collaborative tools
-
-## Resources
-
-- [Astro Docs](https://docs.astro.build)
-- [HTMX Docs](https://htmx.org/docs/)
-- [Bun Docs](https://bun.sh/docs)
-- [MongoDB Driver](https://www.mongodb.com/docs/drivers/node/)
-
-## License
-
-MIT
-
+A lightweight full-stack template for launching MVPs, internal tools, dashboards, and CRUD applications without the complexity of modern frontend frameworks.
+ 
+BOOM combines a server-first architecture with a simple development experience, providing a solid starting point for projects that need to be built and deployed quickly.
+ 
 ---
+ 
+## Why BOOM?
+ 
+Many modern web applications start with a large amount of tooling:
+ 
+```text
+React
+↓
+Next.js
+↓
+API Layer
+↓
+ORM
+↓
+Database
+```
+ 
+For highly interactive applications this can make sense.
+ 
+For many MVPs and business applications, it can introduce unnecessary complexity.
+ 
+BOOM takes a simpler approach:
+ 
+```text
+Browser
+↓
+HTMX
+↓
+Astro Server
+↓
+MongoDB
+```
+ 
+The server renders HTML.
+ 
+HTMX handles dynamic updates.
+ 
+MongoDB stores the data.
+ 
+The result is a stack that is:
+ 
+- Fast to develop
+- Easy to understand
+- Easy to deploy
+- Lightweight
+- Suitable for rapid iteration
+ 
+---
+ 
+## What BOOM Is
+ 
+BOOM is an opinionated starter template built around:
+ 
+- **Bun** for runtime and package management
+- **Astro** for server-side rendering
+- **HTMX** for dynamic user interactions
+- **MongoDB** for persistence
+- **Docker** for deployment
+ 
+It is designed to help developers move from idea to working application quickly.
+ 
+---
+ 
+## What BOOM Is Not
+ 
+BOOM is not:
+ 
+- A new frontend framework
+- A replacement for React, Vue, or Svelte
+- A new database abstraction layer
+- A new deployment platform
+ 
+It is simply a curated stack and project structure that brings together proven tools for building and deploying web applications.
+ 
+---
+ 
+# The Stack
+ 
+## Bun
+ 
+[Bun](https://bun.sh) is used as the runtime and package manager.
+ 
+Benefits:
+ 
+- Fast installs
+- Fast execution
+- Simple tooling
+- TypeScript support out of the box
+ 
+Example:
+ 
+```bash
+bun install
+bun run dev
+```
+ 
+---
+ 
+## Astro
+ 
+[Astro](https://astro.build) powers the application frontend and server.
+ 
+Why Astro?
+ 
+- Server-first architecture
+- Excellent performance
+- Minimal client-side JavaScript
+- Component-based development
+- Flexible routing
+ 
+Pages are rendered on the server and delivered as HTML.
+ 
+---
+ 
+## HTMX
+ 
+[HTMX](https://htmx.org) enables dynamic interactions without needing a full JavaScript framework.
+ 
+Instead of writing API clients and managing frontend state, HTMX allows HTML to make requests directly.
+ 
+Example:
+ 
+```html
+<button
+hx-post="/api/tasks/create"
+hx-target="#task-list"
+hx-swap="innerHTML"
+>
+Add Task
+</button>
+```
+ 
+The browser sends a request.
+ 
+The server returns HTML.
+ 
+HTMX updates the page.
+ 
+No React state management required.
+ 
+---
+ 
+## MongoDB
+ 
+MongoDB provides persistence for application data.
+ 
+Ideal for:
+ 
+- MVPs
+- Dashboards
+- Internal tools
+- SaaS prototypes
+- Content-driven applications
+ 
+Connection handling is centralised within the application.
+ 
+---
+ 
+## Docker
+ 
+Docker provides a repeatable deployment process.
+ 
+Package the entire application into a container and deploy it anywhere that supports Docker.
+ 
+Examples:
+ 
+- VPS
+- Digital Ocean
+- Hetzner
+- Railway
+- Fly.io
+- AWS
+- Azure
+ 
+---
+ 
+# Architecture
+ 
+A typical request follows this flow:
+ 
+```text
+User Action
+↓
+HTMX Request
+↓
+Astro Endpoint
+↓
+MongoDB Query
+↓
+Rendered HTML
+↓
+HTMX Page Update
+```
+ 
+This keeps most application logic on the server where it is easier to manage and debug.
+ 
+---
+ 
+# Project Structure
+ 
+```text
+src/
+├── components/
+├── layouts/
+├── pages/
+├── lib/
+├── styles/
+└── middleware
+ 
+public/
+docker/
+```
+ 
+### Components
+ 
+Reusable UI elements.
+ 
+```text
+src/components/
+```
+ 
+### Layouts
+ 
+Shared page templates.
+ 
+```text
+src/layouts/
+```
+ 
+### Pages
+ 
+Application routes.
+ 
+```text
+src/pages/
+```
+ 
+### Lib
+ 
+Database utilities, business logic, and shared helpers.
+ 
+```text
+src/lib/
+```
+ 
+---
+ 
+# Getting Started
+ 
+## Prerequisites
+ 
+- Bun
+- MongoDB
+- Docker (optional)
+ 
+---
+ 
+## Install Dependencies
+ 
+```bash
+bun install
+```
+ 
+---
+ 
+## Configure Environment Variables
+ 
+Create a `.env` file:
+ 
+```env
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB=boom
+```
+ 
+---
+ 
+## Start Development Server
+ 
+```bash
+bun run dev
+```
+ 
+Application will be available at:
+ 
+```text
+http://localhost:4321
+```
+ 
+---
+ 
+## Build for Production
+ 
+```bash
+bun run build
+```
+ 
+---
+ 
+## Preview Production Build
+ 
+```bash
+bun run preview
+```
+ 
+---
+ 
+# Running with Docker
+ 
+Build image:
+ 
+```bash
+docker build -t boom .
+```
+ 
+Run container:
+ 
+```bash
+docker run -p 4321:4321 boom
+```
+ 
+---
+ 
+# Example Use Cases
+ 
+BOOM works particularly well for:
+ 
+### SaaS MVPs
+ 
+Build and validate product ideas quickly.
+ 
+### Internal Business Tools
+ 
+Admin panels, reporting dashboards, and operational software.
+ 
+### Customer Portals
+ 
+Account management and business workflows.
+ 
+### Booking Systems
+ 
+Simple appointment and reservation systems.
+ 
+### CRUD Applications
+ 
+Applications that primarily create, read, update, and delete data.
+ 
+### Content Management Tools
+ 
+Server-rendered applications with rich content and minimal client-side complexity.
+ 
+---
+ 
+# When You Might Not Want BOOM
+ 
+A different architecture may be more suitable if your application relies heavily on:
+ 
+- Real-time collaborative editing
+- Complex browser-side state
+- Rich drag-and-drop interactions
+- Browser-based design tools
+- Highly interactive SPA experiences
+ 
+For those applications, a frontend framework such as React or Vue may be a better fit.
+ 
+---
+ 
+# Philosophy
+ 
+BOOM follows a simple idea:
+ 
+> Prefer server-rendered HTML until there is a clear reason not to.
+ 
+Many projects spend significant time managing frontend complexity before they have validated the problem they are trying to solve.
+ 
+BOOM aims to reduce that overhead by combining modern tools with a server-first approach.
+ 
+Build the product.
+ 
+Validate the idea.
+ 
+Add complexity only when it becomes necessary.
+ 
+---
+ 
+# Contributing
+ 
+Contributions, improvements, and suggestions are welcome.
+ 
+Feel free to open an issue or submit a pull request.
+ 
+---
+ 
+# Licence
+ 
+MIT
 
 **Clone it. Build it. Ship it.** 🚀
